@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Facepunch;
 using LeatherLoader;
 
@@ -88,6 +87,31 @@ namespace DumpTruck
                 //All the spawners are actually named the same thing, so we need to incorporate their instanceID's too.
                 string fileName = Path.ChangeExtension(Path.Combine(objectSpawnersDir, string.Concat(spawner.gameObject.name,"_",spawner.gameObject.GetInstanceID())), ".cfg");
                 File.WriteAllText(fileName, outputBuilder.ToString());
+
+				foreach (var chance in spawner._lootableChances)
+				{
+					String lootListFilename = Path.ChangeExtension(Path.Combine (objectSpawnersDir, string.Concat(spawner.gameObject.name,"_",spawner.gameObject.GetInstanceID(),"_",chance.obj._spawnList.name)), ".cfg");
+
+					StringBuilder lootListBuilder = new StringBuilder();
+					lootListBuilder.AppendLine("# Min\tMax\tNoDupes\tOneOfEach");
+					lootListBuilder.AppendFormat(string.Format("{0}\t{1}\t{2}\t{3}", chance.obj._spawnList.minPackagesToSpawn, chance.obj._spawnList.maxPackagesToSpawn, chance.obj._spawnList.noDuplicates, chance.obj._spawnList.spawnOneOfEach));
+					lootListBuilder.AppendLine();
+					lootListBuilder.AppendLine();
+					
+					lootListBuilder.AppendLine("# Prob Weight\tT or I\tItem Name\tMin Count\tMax Count");
+					if (chance.obj._spawnList.LootPackages != null)
+					{
+						foreach (var package in chance.obj._spawnList.LootPackages)
+						{
+							string type = "T";
+							if (DatablockDictionary.GetByName(package.obj.name) != null)
+								type = "I";
+							lootListBuilder.AppendFormat(string.Format("{0}\t{1}\t{2}\t{3}\t{4}", package.weight, type, package.obj.name, package.amountMin, package.amountMax));
+							lootListBuilder.AppendLine();
+						}
+					}
+					File.WriteAllText(lootListFilename, lootListBuilder.ToString());
+				}
             }
         }
 
@@ -121,20 +145,36 @@ namespace DumpTruck
                 LootSpawnList list = DatablockDictionary._lootSpawnLists[key];
 
                 StringBuilder outputBuilder = new StringBuilder();
-                outputBuilder.AppendLine("# Min\tMax\tNoDupes\tOneOfEach");
-                outputBuilder.AppendFormat(string.Format("{0}\t{1}\t{2}\t{3}", list.minPackagesToSpawn, list.maxPackagesToSpawn, list.noDuplicates, list.spawnOneOfEach));
-                outputBuilder.AppendLine();
-                outputBuilder.AppendLine();
 
-                outputBuilder.AppendLine("# Prob Weight\tT or I\tItem Name\tMin Count\tMax Count");
-                foreach (var package in list.LootPackages)
-                {
-                    string type = "T";
-                    if (DatablockDictionary.GetByName(package.obj.name) != null)
-                        type = "I";
-                    outputBuilder.AppendFormat(string.Format("{0}\t{1}\t{2}\t{3}\t{4}", package.weight, type, package.obj.name, package.amountMin, package.amountMax));
-                    outputBuilder.AppendLine();
-                }
+				if (list == null)
+					outputBuilder.AppendLine("Empty");
+				else 
+				{
+	                outputBuilder.AppendLine("# Min\tMax\tNoDupes\tOneOfEach");
+	                outputBuilder.AppendFormat(string.Format("{0}\t{1}\t{2}\t{3}", list.minPackagesToSpawn, list.maxPackagesToSpawn, list.noDuplicates, list.spawnOneOfEach));
+	                outputBuilder.AppendLine();
+	                outputBuilder.AppendLine();
+
+	                outputBuilder.AppendLine("# Prob Weight\tT or I\tItem Name\tMin Count\tMax Count");
+	                foreach (var package in list.LootPackages)
+	                {
+						if (package == null)
+						{
+							outputBuilder.AppendLine("Empty");
+						} else
+						{
+		                    string type = "T";
+		                    if (package.obj == null || DatablockDictionary.GetByName(package.obj.name) != null)
+		                        type = "I";
+
+							String objName = "null";
+							if (package.obj != null)
+								objName = package.obj.name;
+		                    outputBuilder.AppendFormat(string.Format("{0}\t{1}\t{2}\t{3}\t{4}", package.weight, type, objName, package.amountMin, package.amountMax));
+		                    outputBuilder.AppendLine();
+						}
+	                }
+				}
 
                 string fileName = Path.ChangeExtension(Path.Combine(lootListDir, key), ".cfg");
                 File.WriteAllText(fileName, outputBuilder.ToString());
