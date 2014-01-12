@@ -44,9 +44,6 @@
     <Reference Include="UnityEngine">
       <HintPath>C:\Users\Stephen\Desktop\RustServer\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="LeatherLoader">
-      <HintPath>C:\Users\Stephen\Desktop\furnace\LeatherLoader.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:\Users\Stephen\Desktop\RustServer\mscorlib.dll</HintPath>
     </Reference>
@@ -61,6 +58,9 @@
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>C:\Users\Stephen\Desktop\RustServer\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="LeatherLoader">
+      <HintPath>..\..\LeatherLoader\LeatherLoader\bin\Release\LeatherLoader.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

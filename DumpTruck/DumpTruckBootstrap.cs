@@ -20,10 +20,13 @@ namespace DumpTruck
             DontDestroyOnLoad(this.gameObject);
         }
 
+		public void ReceiveLeatherConfiguration(LeatherConfig config) {
+			//Initialize config directory path where all the table files go
+			configDir = config.ConfigDirectoryPath;
+		}
+
         public void Start()
         {
-            //Build config directory for where we're gonna output stuff
-            configDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "config"));
             //OnceLoaded gets called when all the bundles have finished loading into the game.  It's a good time to futz with the datablock dictionary
             //and other jerky things.
             Bundling.OnceLoaded += new Bundling.OnLoadedEventHandler(AssetsReady);
