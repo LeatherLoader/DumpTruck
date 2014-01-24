@@ -106,10 +106,14 @@ namespace DumpTruck
 					{
 						foreach (var package in chance.obj._spawnList.LootPackages)
 						{
+							String name = "null";
+							if (package.obj != null)
+								name = package.obj.name;
+
 							string type = "T";
-							if (DatablockDictionary.GetByName(package.obj.name) != null)
+							if (package.obj == null || DatablockDictionary.GetByName(package.obj.name) != null)
 								type = "I";
-							lootListBuilder.AppendFormat(string.Format("{0}\t{1}\t{2}\t{3}\t{4}", package.weight, type, package.obj.name, package.amountMin, package.amountMax));
+							lootListBuilder.AppendFormat(string.Format("{0}\t{1}\t{2}\t{3}\t{4}", package.weight, type, name, package.amountMin, package.amountMax));
 							lootListBuilder.AppendLine();
 						}
 					}
